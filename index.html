@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedMatch Pro - Your Global Medication Guide</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="#" class="logo">
+                <i class="fas fa-pills"></i> MedMatch.Pro
+            </a>
+            
+            <div class="nav-links">
+                <a href="#features" data-i18n="nav-features">Features</a>
+                <a href="#screens" data-i18n="nav-how-it-works">How It Works</a>
+                <a href="#download" data-i18n="nav-download">Download</a>
+            </div>
+            
+            <div class="header-right">
+                <a href="#download" class="download-btn" data-i18n="btn-get-app">Get App</a>
+                
+                <!-- Language Selector -->
+                <div class="language-selector">
+                    <div class="current-language">
+                        <span data-i18n="lang-current">English</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="language-dropdown">
+                        <div class="language-option active" data-lang="en">
+                            <img src="./images/united-states.png" alt="English"> English
+                        </div>
+                        <div class="language-option" data-lang="fr">
+                            <img src="./images/france.png" alt="Français"> Français
+                        </div>
+                        <div class="language-option" data-lang="ru">
+                            <img src="./images/russia.png" alt="Русский"> Русский
+                        </div>
+                        <div class="language-option" data-lang="es">
+                            <img src="./images/spain.png" alt="Español"> Español
+                        </div>
+                        <div class="language-option" data-lang="de">
+                            <img src="./images/germany.png" alt="Deutsch"> Deutsch
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </div>
+    
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                  <a href="https://www.producthunt.com/posts/medmatch-pro" target="_blank" class="product-hunt-badge">
+        <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=948641&theme=dark" alt="MedMatch Pro on Product Hunt" width="200" height="43" />
+    </a>
+    
+    <h1 data-i18n="hero-title">Your Global Medication Guide</h1>
+    <p class="hero-description" data-i18n="hero-description">Find equivalent medications worldwide, identify pills in seconds, and access detailed information - all in one powerful app.</p>
+     
+                <div class="hero-btns">
+                    <a href="#download" class="download-btn">
+                        <i class="fas fa-download"></i>
+                        <span data-i18n="btn-download-now">Download Now</span>
+                    </a>
+                    <a href="#features" class="secondary-btn">
+                        <i class="fas fa-info-circle"></i>
+                        <span data-i18n="btn-learn-more">Learn More</span>
+                    </a>
+                </div>
+                
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-number">10k+</div>
+                        <div class="stat-label" data-i18n="stat-downloads">Downloads</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">70+</div>
+                        <div class="stat-label" data-i18n="stat-countries">Countries</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">4.8</div>
+                        <div class="stat-label" data-i18n="stat-app-rating">App Rating</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hero-image">
+                <div class="iphone-frame">
+                    <div class="iphone-screen">
+                        <img src="./images/screenshot1.png" alt="MedMatch Pro App Screen">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-intro">
+                <span class="section-tag" data-i18n="section-key-features">Key Features</span>
+                <h2 class="section-title" data-i18n="section-why-choose">Why Choose MedMatch Pro?</h2>
+                <p class="section-desc" data-i18n="section-designed-for">Designed for travelers, medical professionals, and anyone who needs accurate medication information at their fingertips.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-globe-americas"></i>
+                    </div>
+                    <h3 class="feature-title" data-i18n="feature1-title">Global Medication Finder</h3>
+                    <p class="feature-desc" data-i18n="feature1-desc">Search for medications anywhere in the world and find local equivalents instantly.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-camera-retro"></i>
+                    </div>
+                    <h3 class="feature-title" data-i18n="feature2-title">Pill Identifier</h3>
+                    <p class="feature-desc" data-i18n="feature2-desc">Snap a photo or scan packaging for quick and reliable identification.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-medical-alt"></i>
+                    </div>
+                    <h3 class="feature-title" data-i18n="feature3-title">Detailed Information</h3>
+                    <p class="feature-desc" data-i18n="feature3-desc">Access complete medication descriptions, dosage guidelines, and side effects.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bookmark"></i>
+                    </div>
+                    <h3 class="feature-title" data-i18n="feature4-title">Save & Access</h3>
+                    <p class="feature-desc" data-i18n="feature4-desc">Keep your recent searches and medication lists for quick access anytime.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-language"></i>
+                    </div>
+                    <h3 class="feature-title" data-i18n="feature5-title">Multi-Language Support</h3>
+                    <p class="feature-desc" data-i18n="feature5-desc">Use the app in your preferred language for better understanding.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="feature-title" data-i18n="feature6-title">Privacy Focused</h3>
+                    <p class="feature-desc" data-i18n="feature6-desc">Your data stays on your device, ensuring complete privacy and security.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="app-showcase" id="screens">
+        <div class="container">
+            <div class="section-intro">
+                <span class="section-tag" data-i18n="section-app-preview">App Preview</span>
+                <h2 class="section-title" data-i18n="section-see-in-action">See MedMatch Pro in Action</h2>
+                <p class="section-desc" data-i18n="section-experience">Experience the intuitive interface and powerful features that make medication management easy.</p>
+            </div>
+            <div class="app-screens">
+                <div class="screen-wrapper">
+                    <div class="screen-iphone">
+                        <div class="screen-inner">
+                            <img src="./images/screenshot1.png" alt="MedMatch Pro Home Screen" class="screen">
+                        </div>
+                    </div>
+                </div>
+                <div class="screen-wrapper">
+                    <div class="screen-iphone">
+                        <div class="screen-inner">
+                            <img src="./images/screenshot2.png" alt="MedMatch Pro Details Screen" class="screen">
+                        </div>
+                    </div>
+                </div>
+                <div class="screen-wrapper">
+                    <div class="screen-iphone">
+                        <div class="screen-inner">
+                            <img src="./images/screenshot3.jpg" alt="MedMatch Pro Search Screen" class="screen">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="cta" id="download">
+        <div class="container">
+            <div class="cta-content">
+                <span class="section-tag" data-i18n="section-download-now">DOWNLOAD NOW</span>
+                <h2 class="cta-title" data-i18n="section-get-today">Get MedMatch Pro Today</h2>
+                <p class="section-desc" data-i18n="section-reliable">Reliable medication information at your fingertips – no ads, just trusted knowledge!</p>
+                
+                <div class="app-store-buttons">
+                    <a href="https://apps.apple.com/es/app/medmatch-pro/id6743503216?l=en-GB" class="store-button">
+                        <span class="store-icon"><img src="./images/apple_icon.svg" alt="App Store" class="store-icon-img"></span>
+                        <span data-i18n="store-app-store">App Store</span>
+                    </a>
+                    
+                    <a href="#" class="store-button">
+                        <span class="store-icon"><img src="./images/gp_icon.svg" alt="Google Play" class="store-icon-img"></span>
+                        <span data-i18n="store-google-play">Google Play</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <p class="copyright" data-i18n="copyright">&copy; 2025 MedMatch Pro. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="translations.js"></script>
+    <script src="scripts.js"></script>
+</body>
+</html>
