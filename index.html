@@ -3,224 +3,1343 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedMatch Pro - Your Global Medication Guide</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
+    <title>MedMatch Pro — Your Medicine. Anywhere in the World.</title>
+    <meta name="description" content="Find medication equivalents in 70+ countries, scan prescriptions, and never miss a dose. Free iOS app.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="./images/icon.png">
+    <link rel="apple-touch-icon" href="./images/icon.png">
+    <style>
+        /* ====================================================
+           VARIABLES & RESET
+        ==================================================== */
+        :root {
+            --accent-start: #6B3FA0;
+            --accent-end:   #4A90D9;
+            --accent:       linear-gradient(135deg, #6B3FA0, #4A90D9);
+            --text:         #ffffff;
+            --text-muted:   rgba(255, 255, 255, 0.58);
+            --text-faint:   rgba(255, 255, 255, 0.32);
+            --card-bg:      rgba(255, 255, 255, 0.04);
+            --card-border:  rgba(255, 255, 255, 0.08);
+            --card-hover:   rgba(255, 255, 255, 0.072);
+        }
+
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #0D0B1E, #130D35, #0A1628);
+            min-height: 100%;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            color: var(--text);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ====================================================
+           UTILITIES
+        ==================================================== */
+        .container {
+            max-width: 1160px;
+            margin: 0 auto;
+            padding: 0 28px;
+        }
+
+        .gradient-text {
+            background: var(--accent);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Scroll-triggered fade-in */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(28px);
+            transition:
+                opacity  0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ====================================================
+           NAVBAR
+        ==================================================== */
+        .navbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            transition: background 0.4s, padding 0.4s, border-color 0.4s;
+            border-bottom: 1px solid transparent;
+        }
+
+        .navbar.scrolled {
+            background: rgba(13, 11, 30, 0.78);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border-bottom-color: rgba(255, 255, 255, 0.06);
+        }
+
+        .navbar-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 0;
+            transition: padding 0.4s;
+        }
+
+        .navbar.scrolled .navbar-inner {
+            padding: 13px 0;
+        }
+
+        /* Logo */
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            font-size: 19px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.3px;
+            flex-shrink: 0;
+        }
+
+        .nav-logo-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Desktop nav links */
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 36px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--text); }
+
+        .nav-cta {
+            background: var(--accent) !important;
+            color: white !important;
+            padding: 10px 22px;
+            border-radius: 10px;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            box-shadow: 0 4px 18px rgba(107, 63, 160, 0.38);
+            transition: opacity 0.2s, transform 0.2s !important;
+        }
+
+        .nav-cta:hover {
+            opacity: 0.88;
+            transform: translateY(-1px);
+        }
+
+        /* Hamburger */
+        .nav-hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 4px;
+            background: none;
+            border: none;
+        }
+
+        .nav-hamburger span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: white;
+            border-radius: 2px;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+
+        .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+        .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+        /* Mobile dropdown */
+        .nav-mobile {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+            background: rgba(10, 8, 28, 0.97);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+        }
+
+        .nav-mobile.open { max-height: 340px; }
+
+        .nav-mobile-inner {
+            padding: 8px 28px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .nav-mobile a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            padding: 11px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: color 0.2s;
+        }
+
+        .nav-mobile a:last-child {
+            border-bottom: none;
+            margin-top: 10px;
+            background: var(--accent);
+            color: white;
+            text-align: center;
+            padding: 12px 22px;
+            border-radius: 10px;
+        }
+
+        /* ====================================================
+           HERO
+        ==================================================== */
+        .hero {
+            padding-top: 80px;
+            padding-bottom: 80px;
+            min-height: 100svh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Ambient glows */
+        .hero-glow-1 {
+            position: absolute;
+            top: -260px; right: -160px;
+            width: 680px; height: 680px;
+            background: radial-gradient(circle, rgba(107, 63, 160, 0.18) 0%, transparent 68%);
+            pointer-events: none;
+        }
+
+        .hero-glow-2 {
+            position: absolute;
+            bottom: -180px; left: -80px;
+            width: 520px; height: 520px;
+            background: radial-gradient(circle, rgba(74, 144, 217, 0.12) 0%, transparent 68%);
+            pointer-events: none;
+        }
+
+        .hero-inner {
+            display: flex;
+            align-items: center;
+            gap: 80px;
+        }
+
+        .hero-content {
+            flex: 1;
+            max-width: 540px;
+        }
+
+        .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(107, 63, 160, 0.14);
+            border: 1px solid rgba(107, 63, 160, 0.28);
+            border-radius: 100px;
+            padding: 6px 14px 6px 10px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #B49FF0;
+            margin-bottom: 28px;
+        }
+
+        .hero h1 {
+            font-size: 66px;
+            font-weight: 900;
+            line-height: 1.06;
+            letter-spacing: -2.5px;
+            margin-bottom: 24px;
+        }
+
+        .hero-sub {
+            font-size: 18px;
+            line-height: 1.7;
+            color: var(--text-muted);
+            margin-bottom: 44px;
+            max-width: 440px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        /* Store buttons */
+        .store-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 28px;
+            border-radius: 16px;
+            text-decoration: none;
+            transition: transform 0.22s, box-shadow 0.22s, opacity 0.22s;
+            cursor: pointer;
+            border: none;
+            font-family: 'Inter', sans-serif;
+            width: 100%;
+            max-width: 260px;
+            min-width: unset;
+        }
+
+        .store-btn-primary {
+            background: linear-gradient(135deg, #6B3FA0 0%, #4A90D9 60%, #C850A0 100%);
+            color: white;
+            box-shadow: 0 4px 24px rgba(107, 63, 160, 0.4);
+        }
+
+        .store-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 36px rgba(107, 63, 160, 0.55);
+            opacity: 0.92;
+        }
+
+        .store-btn-disabled {
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: not-allowed;
+        }
+
+        .store-btn img {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .store-btn-disabled img {
+            filter: grayscale(1);
+        }
+
+        .store-btn-text {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .store-btn-text small {
+            font-size: 11px;
+            font-weight: 500;
+            opacity: 0.55;
+            display: block;
+            line-height: 1.3;
+        }
+
+        .store-btn-text strong {
+            font-size: 15px;
+            font-weight: 700;
+            display: block;
+            line-height: 1.4;
+        }
+
+        /* ====================================================
+           APP STORE BUTTON
+        ==================================================== */
+        .btn-appstore {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #5B2D9A 0%, #3A7BD5 50%, #B040A0 100%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 14px;
+            padding: 12px 24px;
+            width: 100%;
+            max-width: 260px;
+            min-width: unset;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow:
+                0 4px 20px rgba(107, 63, 160, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .btn-appstore:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 8px 30px rgba(107, 63, 160, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-appstore .apple-icon {
+            font-size: 28px;
+            line-height: 1;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .btn-appstore .btn-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .btn-appstore .btn-label {
+            font-size: 11px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.8);
+            letter-spacing: 0.3px;
+            line-height: 1;
+        }
+
+        .btn-appstore .btn-store {
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            line-height: 1.2;
+            letter-spacing: -0.3px;
+        }
+
+        /* Hero phone mockup */
+        .hero-phone-wrap {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .hero-phone-glow {
+            position: absolute;
+            width: 340px;
+            height: 340px;
+            background: radial-gradient(circle, rgba(107, 63, 160, 0.38) 0%, transparent 68%);
+            border-radius: 50%;
+            filter: blur(48px);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(-20px); }
+        }
+
+        .hero-phone {
+            position: relative;
+            z-index: 1;
+            animation: float 7s ease-in-out infinite;
+        }
+
+        /* ====================================================
+           PHONE FRAME
+        ==================================================== */
+        .phone-mockup {
+            width: 340px;
+            height: 700px;
+            border-radius: 40px;
+            border: none;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            background: #000;
+        }
+
+        .phone-mockup img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top;
+            display: block;
+        }
+
+        /* ====================================================
+           SECTION COMMON
+        ==================================================== */
+        .section { padding: 104px 0; }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 68px;
+        }
+
+        .section-tag {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: var(--accent);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 14px;
+        }
+
+        .section-title {
+            font-size: 44px;
+            font-weight: 800;
+            line-height: 1.14;
+            letter-spacing: -1.2px;
+            margin-bottom: 16px;
+        }
+
+        .section-desc {
+            font-size: 17px;
+            color: var(--text-muted);
+            line-height: 1.65;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* ====================================================
+           FEATURES
+        ==================================================== */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .feature-card {
+            background: #1A1635;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 32px 26px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .feature-card:hover {
+            border-color: rgba(107, 63, 160, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Highlight: Pill Reminder card */
+        .feature-card.highlighted {
+            border-color: rgba(107, 63, 160, 0.5);
+            background: #1e1840;
+        }
+
+        .feature-card.highlighted:hover {
+            border-color: rgba(107, 63, 160, 0.7);
+        }
+
+        /* "NEW" badge */
+        .feature-new-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: var(--accent);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 100px;
+        }
+
+        .feature-icon-wrap {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: rgba(107, 63, 160, 0.2);
+            border: 1px solid rgba(107, 63, 160, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 22px;
+            color: #B49FF0;
+            opacity: 1;
+        }
+
+        .feature-card.highlighted .feature-icon-wrap {
+            background: rgba(107, 63, 160, 0.22);
+            border-color: rgba(107, 63, 160, 0.42);
+        }
+
+        .feature-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .feature-desc {
+            font-size: 14px;
+            line-height: 1.65;
+            color: var(--text-muted);
+        }
+
+        /* ====================================================
+           HOW IT WORKS
+        ==================================================== */
+        .how-it-works {
+            background: rgba(255, 255, 255, 0.017);
+            border-top:    1px solid rgba(255, 255, 255, 0.055);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+        }
+
+        .steps-wrapper {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .step-num-row {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 18px;
+        }
+
+        .step-num {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+            font-weight: 800;
+            color: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-connector {
+            flex: 0 0 80px;
+            height: 0;
+            border-top: 2px solid rgba(107, 63, 160, 0.35);
+            align-self: flex-start;
+            margin-top: 28px; /* align with center of step-num circle */
+        }
+
+        .step-icon-wrap {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: rgba(107, 63, 160, 0.12);
+            border: 1px solid rgba(107, 63, 160, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            color: #B49FF0;
+        }
+
+        .step h3 {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            line-height: 1.35;
+        }
+
+        .step p {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.65;
+        }
+
+        /* ====================================================
+           SCREENSHOTS
+        ==================================================== */
+        .screenshots-scroll-wrap {
+            overflow: hidden;
+        }
+
+        .screenshots-scroll {
+            display: flex;
+            gap: 24px;
+            overflow-x: auto;
+            padding: 12px 28px 36px;
+            justify-content: center;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(107, 63, 160, 0.4) transparent;
+        }
+
+        .screenshots-scroll::-webkit-scrollbar { height: 4px; }
+        .screenshots-scroll::-webkit-scrollbar-track { background: transparent; }
+        .screenshots-scroll::-webkit-scrollbar-thumb {
+            background: rgba(107, 63, 160, 0.4);
+            border-radius: 2px;
+        }
+
+        .screenshot-item {
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+        }
+
+        /* Screenshot phone frames */
+        .ss-phone {
+            width: 260px;
+            height: 530px;
+            border-radius: 36px;
+            border: none;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            background: #000;
+            flex-shrink: 0;
+        }
+
+        .ss-screen {
+            width: 100%;
+            height: 100%;
+        }
+
+        .ss-screen img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top;
+            display: block;
+        }
+
+        .ss-caption {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-align: center;
+            max-width: 170px;
+            line-height: 1.5;
+        }
+
+        /* ====================================================
+           DOWNLOAD CTA
+        ==================================================== */
+        .download-cta { text-align: center; }
+
+        .download-cta-box {
+            background: rgba(107, 63, 160, 0.07);
+            border: 1px solid rgba(107, 63, 160, 0.22);
+            border-radius: 32px;
+            padding: 80px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Top glow inside box */
+        .download-cta-box::before {
+            content: '';
+            position: absolute;
+            top: -120px; left: 50%;
+            transform: translateX(-50%);
+            width: 440px; height: 280px;
+            background: radial-gradient(circle, rgba(107, 63, 160, 0.22) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .download-cta-box h2 {
+            font-size: 46px;
+            font-weight: 900;
+            letter-spacing: -1.8px;
+            line-height: 1.1;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .cta-sub {
+            font-size: 16px;
+            color: var(--text-muted);
+            margin-bottom: 48px;
+            position: relative;
+        }
+
+        .cta-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+
+        /* ====================================================
+           FOOTER
+        ==================================================== */
+        footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 36px 0;
+        }
+
+        .footer-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .footer-logo-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .footer-copy {
+            font-size: 14px;
+            color: var(--text-faint);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 22px;
+        }
+
+        .footer-links a {
+            font-size: 14px;
+            color: var(--text-faint);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover { color: var(--text-muted); }
+
+        /* ====================================================
+           RESPONSIVE
+        ==================================================== */
+        @media (max-width: 1024px) {
+            .hero h1 { font-size: 54px; }
+            .features-grid { grid-template-columns: repeat(2, 1fr); }
+            .section-title { font-size: 38px; }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .nav-hamburger { display: flex; }
+
+            .hero {
+                padding-top: 108px;
+                padding-bottom: 64px;
+                min-height: auto;
+                align-items: flex-start;
+            }
+
+            .hero-inner {
+                flex-direction: column;
+                gap: 52px;
+                text-align: center;
+            }
+
+            .hero-content { max-width: 100%; }
+
+            .hero-eyebrow {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .hero h1 {
+                font-size: 38px;
+                letter-spacing: -1.2px;
+            }
+
+            .hero-sub {
+                max-width: 100%;
+                font-size: 16px;
+            }
+
+            .hero-buttons { align-items: center; }
+
+            .phone-mockup {
+                width: 260px;
+                height: 536px;
+            }
+
+            .ss-phone {
+                width: 200px;
+                height: 408px;
+            }
+
+            .section { padding: 72px 0; }
+            .section-title { font-size: 30px; letter-spacing: -0.8px; }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+
+            .steps-wrapper {
+                flex-direction: column;
+                align-items: center;
+                gap: 0;
+            }
+
+            .step { max-width: 320px; width: 100%; }
+
+            .step-connector {
+                width: 2px;
+                height: 44px;
+                flex: none;
+                margin-top: 0;
+                align-self: center;
+                background: linear-gradient(180deg, rgba(107,63,160,0.38), rgba(74,144,217,0.38));
+            }
+
+            .download-cta-box {
+                padding: 56px 16px;
+                border-radius: 24px;
+            }
+
+            .download-cta-box h2 {
+                font-size: 30px;
+                letter-spacing: -1px;
+            }
+
+            .footer-inner {
+                flex-direction: column;
+                text-align: center;
+                gap: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 32px; }
+            .container { padding: 0 20px; }
+            .store-btn { padding: 11px 18px; }
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <a href="#" class="logo">
-                <i class="fas fa-pills"></i> MedMatch.Pro
-            </a>
-            
-            <div class="nav-links">
-                <a href="#features" data-i18n="nav-features">Features</a>
-                <a href="#screens" data-i18n="nav-how-it-works">How It Works</a>
-                <a href="#download" data-i18n="nav-download">Download</a>
-            </div>
-            
-            <div class="header-right">
-                <a href="#download" class="download-btn" data-i18n="btn-get-app">Get App</a>
-                
-                <!-- Language Selector -->
-                <div class="language-selector">
-                    <div class="current-language">
-                        <span data-i18n="lang-current">English</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="language-dropdown">
-                        <div class="language-option active" data-lang="en">
-                            <img src="./images/united-states.png" alt="English"> English
-                        </div>
-                        <div class="language-option" data-lang="fr">
-                            <img src="./images/france.png" alt="Français"> Français
-                        </div>
-                        <div class="language-option" data-lang="ru">
-                            <img src="./images/russia.png" alt="Русский"> Русский
-                        </div>
-                        <div class="language-option" data-lang="es">
-                            <img src="./images/spain.png" alt="Español"> Español
-                        </div>
-                        <div class="language-option" data-lang="de">
-                            <img src="./images/germany.png" alt="Deutsch"> Deutsch
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </header>
-    </div>
-    
-    <section class="hero">
-        <div class="container">
-            <div class="hero-content">
-                  <a href="https://www.producthunt.com/posts/medmatch-pro" target="_blank" class="product-hunt-badge">
-        <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=948641&theme=dark" alt="MedMatch Pro on Product Hunt" width="200" height="43" />
-    </a>
-    
-    <h1 data-i18n="hero-title">Your Global Medication Guide</h1>
-    <p class="hero-description" data-i18n="hero-description">Find equivalent medications worldwide, identify pills in seconds, and access detailed information - all in one powerful app.</p>
-     
-                <div class="hero-btns">
-                    <a href="#download" class="download-btn">
-                        <i class="fas fa-download"></i>
-                        <span data-i18n="btn-download-now">Download Now</span>
-                    </a>
-                    <a href="#features" class="secondary-btn">
-                        <i class="fas fa-info-circle"></i>
-                        <span data-i18n="btn-learn-more">Learn More</span>
-                    </a>
-                </div>
-                
-                <div class="stats">
-                    <div class="stat-item">
-                        <div class="stat-number">10k+</div>
-                        <div class="stat-label" data-i18n="stat-downloads">Downloads</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">70+</div>
-                        <div class="stat-label" data-i18n="stat-countries">Countries</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">4.8</div>
-                        <div class="stat-label" data-i18n="stat-app-rating">App Rating</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="hero-image">
-                <div class="iphone-frame">
-                    <div class="iphone-screen">
-                        <img src="./images/screenshot1.jpg" alt="MedMatch Pro App Screen">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <section class="features" id="features">
-        <div class="container">
-            <div class="section-intro">
-                <span class="section-tag" data-i18n="section-key-features">Key Features</span>
-                <h2 class="section-title" data-i18n="section-why-choose">Why Choose MedMatch Pro?</h2>
-                <p class="section-desc" data-i18n="section-designed-for">Designed for travelers, medical professionals, and anyone who needs accurate medication information at their fingertips.</p>
-            </div>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-globe-americas"></i>
-                    </div>
-                    <h3 class="feature-title" data-i18n="feature1-title">Global Medication Finder</h3>
-                    <p class="feature-desc" data-i18n="feature1-desc">Search for medications anywhere in the world and find local equivalents instantly.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-camera-retro"></i>
-                    </div>
-                    <h3 class="feature-title" data-i18n="feature2-title">Pill Identifier</h3>
-                    <p class="feature-desc" data-i18n="feature2-desc">Snap a photo or scan packaging for quick and reliable identification.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-file-medical-alt"></i>
-                    </div>
-                    <h3 class="feature-title" data-i18n="feature3-title">Detailed Information</h3>
-                    <p class="feature-desc" data-i18n="feature3-desc">Access complete medication descriptions, dosage guidelines, and side effects.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-bookmark"></i>
-                    </div>
-                    <h3 class="feature-title" data-i18n="feature4-title">Save & Access</h3>
-                    <p class="feature-desc" data-i18n="feature4-desc">Keep your recent searches and medication lists for quick access anytime.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-language"></i>
-                    </div>
-                    <h3 class="feature-title" data-i18n="feature5-title">Multi-Language Support</h3>
-                    <p class="feature-desc" data-i18n="feature5-desc">Use the app in your preferred language for better understanding.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h3 class="feature-title" data-i18n="feature6-title">Privacy Focused</h3>
-                    <p class="feature-desc" data-i18n="feature6-desc">Your data stays on your device, ensuring complete privacy and security.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <section class="app-showcase" id="screens">
-        <div class="container">
-            <div class="section-intro">
-                <span class="section-tag" data-i18n="section-app-preview">App Preview</span>
-                <h2 class="section-title" data-i18n="section-see-in-action">See MedMatch Pro in Action</h2>
-                <p class="section-desc" data-i18n="section-experience">Experience the intuitive interface and powerful features that make medication management easy.</p>
-            </div>
-            <div class="app-screens">
-                <div class="screen-wrapper">
-                    <div class="screen-iphone">
-                        <div class="screen-inner">
-                            <img src="./images/screenshot1.png" alt="MedMatch Pro Home Screen" class="screen">
-                        </div>
-                    </div>
-                </div>
-                <div class="screen-wrapper">
-                    <div class="screen-iphone">
-                        <div class="screen-inner">
-                            <img src="./images/screenshot2.png" alt="MedMatch Pro Details Screen" class="screen">
-                        </div>
-                    </div>
-                </div>
-                <div class="screen-wrapper">
-                    <div class="screen-iphone">
-                        <div class="screen-inner">
-                            <img src="./images/screenshot3.jpg" alt="MedMatch Pro Search Screen" class="screen">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <section class="cta" id="download">
-        <div class="container">
-            <div class="cta-content">
-                <span class="section-tag" data-i18n="section-download-now">DOWNLOAD NOW</span>
-                <h2 class="cta-title" data-i18n="section-get-today">Get MedMatch Pro Today</h2>
-                <p class="section-desc" data-i18n="section-reliable">Reliable medication information at your fingertips – no ads, just trusted knowledge!</p>
-                
-                <div class="app-store-buttons">
-                    <a href="https://apps.apple.com/es/app/medmatch-pro/id6743503216?l=en-GB" class="store-button">
-                        <span class="store-icon"><img src="./images/apple_icon.svg" alt="App Store" class="store-icon-img"></span>
-                        <span data-i18n="store-app-store">App Store</span>
-                    </a>
-                    
-                    <a href="#" class="store-button">
-                        <span class="store-icon"><img src="./images/gp_icon.svg" alt="Google Play" class="store-icon-img"></span>
-                        <span data-i18n="store-google-play">Google Play</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <p class="copyright" data-i18n="copyright">&copy; 2025 MedMatch Pro. All rights reserved.</p>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-facebook"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                </div>
-            </div>
-        </div>
-    </footer>
 
-    <script src="translations.js"></script>
-    <script src="scripts.js"></script>
+<!-- ============================================================
+     NAVBAR
+============================================================ -->
+<nav class="navbar" id="navbar">
+    <div class="container">
+        <div class="navbar-inner">
+            <a href="#" class="nav-logo">
+                <img src="./images/icon.png" alt="MedMatch Pro"
+                     style="width:36px;height:36px;border-radius:8px;flex-shrink:0;">
+                MedMatch Pro
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#download">Download</a></li>
+                <li>
+                    <a href="https://apps.apple.com/es/app/medmatch-pro/id6743503216"
+                       class="nav-cta" target="_blank" rel="noopener">Download Free</a>
+                </li>
+            </ul>
+
+            <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </div>
+
+    <div class="nav-mobile" id="nav-mobile">
+        <div class="nav-mobile-inner">
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="#download">Download</a>
+            <a href="https://apps.apple.com/es/app/medmatch-pro/id6743503216"
+               target="_blank" rel="noopener">Download Free</a>
+        </div>
+    </div>
+</nav>
+
+
+<!-- ============================================================
+     HERO
+============================================================ -->
+<section class="hero" id="hero">
+    <div class="hero-glow-1"></div>
+    <div class="hero-glow-2"></div>
+
+    <div class="container">
+        <div class="hero-inner">
+
+            <div class="hero-content">
+                <div class="hero-eyebrow">
+                    <i data-lucide="globe" style="width:14px;height:14px;"></i>
+                    Available in 70+ countries
+                </div>
+
+                <h1>Your medicine.<br>Anywhere in<br>the world.</h1>
+
+                <p class="hero-sub">Find medication equivalents in 70+ countries,
+                    scan prescriptions, and never miss a dose.</p>
+
+                <div class="hero-buttons">
+                    <a href="https://apps.apple.com/es/app/medmatch-pro/id6743503216"
+                       class="btn-appstore" target="_blank" rel="noopener">
+                        <span class="apple-icon">&#xF8FF;</span>
+                        <span class="btn-text">
+                            <span class="btn-label">Download on the</span>
+                            <span class="btn-store">App Store</span>
+                        </span>
+                    </a>
+
+                    <button class="store-btn store-btn-disabled" disabled>
+                        <img src="./images/gp_icon.svg" alt="">
+                        <span class="store-btn-text">
+                            <small>Coming soon on</small>
+                            <strong>Google Play</strong>
+                        </span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="hero-phone-wrap">
+                <div class="hero-phone-glow"></div>
+                <div class="hero-phone">
+                    <div class="phone-mockup">
+                        <img src="./images/screenshot1.png" alt="MedMatch Pro app">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- ============================================================
+     FEATURES
+============================================================ -->
+<section class="section" id="features">
+    <div class="container">
+
+        <div class="section-header fade-in">
+            <span class="section-tag">Features</span>
+            <h2 class="section-title">Everything you need,<br>everywhere you go.</h2>
+            <p class="section-desc">Built for travelers, patients, and anyone who needs
+                reliable medication information across borders.</p>
+        </div>
+
+        <div class="features-grid">
+
+            <div class="feature-card fade-in" style="transition-delay:0s">
+                <div class="feature-icon-wrap">
+                    <i data-lucide="globe" style="width:22px;height:22px;"></i>
+                </div>
+                <h3 class="feature-title">Find Equivalents Worldwide</h3>
+                <p class="feature-desc">Search any medication and instantly find its equivalent in 70+ countries, with local brand names and dosages.</p>
+            </div>
+
+            <div class="feature-card fade-in" style="transition-delay:0.07s">
+                <div class="feature-icon-wrap">
+                    <i data-lucide="scan-line" style="width:22px;height:22px;"></i>
+                </div>
+                <h3 class="feature-title">Scan Handwritten Prescriptions</h3>
+                <p class="feature-desc">Point your camera at any prescription — even handwritten — and get instant, accurate results.</p>
+            </div>
+
+            <div class="feature-card highlighted fade-in" style="transition-delay:0.14s">
+                <span class="feature-new-badge">New</span>
+                <div class="feature-icon-wrap">
+                    <i data-lucide="bell-ring" style="width:22px;height:22px;"></i>
+                </div>
+                <h3 class="feature-title">Pill Reminder &amp; Dose Tracking</h3>
+                <p class="feature-desc">Set smart reminders and track every dose so you never miss a medication again.</p>
+            </div>
+
+            <div class="feature-card fade-in" style="transition-delay:0.07s">
+                <div class="feature-icon-wrap">
+                    <i data-lucide="camera" style="width:22px;height:22px;"></i>
+                </div>
+                <h3 class="feature-title">Identify Any Pill or Package</h3>
+                <p class="feature-desc">Photo-identify unmarked pills and unfamiliar packaging from anywhere in the world.</p>
+            </div>
+
+            <div class="feature-card fade-in" style="transition-delay:0.14s">
+                <div class="feature-icon-wrap">
+                    <i data-lucide="languages" style="width:22px;height:22px;"></i>
+                </div>
+                <h3 class="feature-title">Translate Medicine Instructions</h3>
+                <p class="feature-desc">Get dosage instructions and side effects translated clearly into your language.</p>
+            </div>
+
+            <div class="feature-card fade-in" style="transition-delay:0.21s">
+                <div class="feature-icon-wrap">
+                    <i data-lucide="shield" style="width:22px;height:22px;"></i>
+                </div>
+                <h3 class="feature-title">Privacy Focused</h3>
+                <p class="feature-desc">Your health data stays on your device. No account required, no tracking, ever.</p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- ============================================================
+     HOW IT WORKS
+============================================================ -->
+<section class="section how-it-works" id="how-it-works">
+    <div class="container">
+
+        <div class="section-header fade-in">
+            <span class="section-tag">How It Works</span>
+            <h2 class="section-title">Three steps to find<br>your medicine.</h2>
+        </div>
+
+        <div class="steps-wrapper fade-in">
+
+            <div class="step">
+                <div class="step-num-row">
+                    <div class="step-num">1</div>
+                </div>
+                <div class="step-icon-wrap">
+                    <i data-lucide="search" style="width:20px;height:20px;"></i>
+                </div>
+                <h3>Search by name or photo</h3>
+                <p>Type a medication name or snap a photo of your pill or packaging.</p>
+            </div>
+
+            <div class="step-connector"></div>
+
+            <div class="step">
+                <div class="step-num-row">
+                    <div class="step-num">2</div>
+                </div>
+                <div class="step-icon-wrap">
+                    <i data-lucide="map-pin" style="width:20px;height:20px;"></i>
+                </div>
+                <h3>Get instant equivalents for your country</h3>
+                <p>See local brand names, generic options, and full medication details.</p>
+            </div>
+
+            <div class="step-connector"></div>
+
+            <div class="step">
+                <div class="step-num-row">
+                    <div class="step-num">3</div>
+                </div>
+                <div class="step-icon-wrap">
+                    <i data-lucide="bookmark-check" style="width:20px;height:20px;"></i>
+                </div>
+                <h3>Save results and set reminders</h3>
+                <p>Bookmark medications for offline access and set reminders to stay on schedule.</p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- ============================================================
+     SCREENSHOTS
+============================================================ -->
+<section class="section" id="screenshots">
+    <div class="container">
+        <div class="section-header fade-in">
+            <span class="section-tag">App Preview</span>
+            <h2 class="section-title">See it in action.</h2>
+            <p class="section-desc">Designed to be intuitive, fast, and reliable — wherever you are.</p>
+        </div>
+    </div>
+
+    <div class="screenshots-scroll-wrap fade-in">
+        <div class="screenshots-scroll">
+
+            <!-- 1 -->
+            <div class="screenshot-item">
+                <div class="ss-phone">
+                    <div class="ss-screen screenshot-1">
+                        <img src="./images/screenshot1.png" alt="MedMatch Pro home">
+                    </div>
+                </div>
+                <p class="ss-caption">Your medicine. Anywhere in the world.</p>
+            </div>
+
+            <!-- 2 -->
+            <div class="screenshot-item">
+                <div class="ss-phone">
+                    <div class="ss-screen screenshot-2">
+                        <img src="./images/screenshot2.png" alt="MedMatch Pro search">
+                    </div>
+                </div>
+                <p class="ss-caption">Everything you need. One tap away.</p>
+            </div>
+
+            <!-- 3 -->
+            <div class="screenshot-item">
+                <div class="ss-phone">
+                    <div class="ss-screen screenshot-3">
+                        <img src="./images/screenshot3.png" alt="MedMatch Pro equivalents">
+                    </div>
+                </div>
+                <p class="ss-caption">Traveling abroad? Find your medicine instantly.</p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- ============================================================
+     DOWNLOAD CTA
+============================================================ -->
+<section class="section download-cta" id="download">
+    <div class="container">
+        <div class="download-cta-box fade-in">
+            <h2>Download free.<br>Find your medicine.<br>Stay safe.</h2>
+            <p class="cta-sub">No ads. No account required. Free to use.</p>
+
+            <div class="cta-buttons">
+                <a href="https://apps.apple.com/es/app/medmatch-pro/id6743503216"
+                   class="btn-appstore" target="_blank" rel="noopener">
+                    <span class="apple-icon">&#xF8FF;</span>
+                    <span class="btn-text">
+                        <span class="btn-label">Download on the</span>
+                        <span class="btn-store">App Store</span>
+                    </span>
+                </a>
+
+                <button class="store-btn store-btn-disabled" disabled>
+                    <img src="./images/gp_icon.svg" alt="">
+                    <span class="store-btn-text">
+                        <small>Coming soon on</small>
+                        <strong>Google Play</strong>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ============================================================
+     FOOTER
+============================================================ -->
+<footer>
+    <div class="container">
+        <div class="footer-inner">
+            <a href="#" class="footer-logo">
+                <img src="./images/icon.png" alt="MedMatch Pro"
+                     style="width:36px;height:36px;border-radius:8px;flex-shrink:0;">
+                MedMatch Pro
+            </a>
+
+            <p class="footer-copy">© 2025 MedMatch Pro</p>
+
+            <div class="footer-links">
+                <a href="https://medmatch-terms.vercel.app/terms_medmatch.html"
+                   target="_blank" rel="noopener">Terms of Use</a>
+                <a href="https://medmatch-terms.vercel.app/terms_medmatch.html"
+                   target="_blank" rel="noopener">Privacy Policy</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+<!-- ============================================================
+     SCRIPTS
+============================================================ -->
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+    // Init Lucide icons
+    lucide.createIcons();
+
+    // ---- Sticky navbar ----
+    const navbar = document.getElementById('navbar');
+    const onScroll = () => {
+        navbar.classList.toggle('scrolled', window.scrollY > 40);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll(); // run once on load
+
+    // ---- Hamburger ----
+    const hamburger = document.getElementById('hamburger');
+    const navMobile = document.getElementById('nav-mobile');
+
+    hamburger.addEventListener('click', () => {
+        const open = hamburger.classList.toggle('open');
+        navMobile.classList.toggle('open', open);
+    });
+
+    // Close on mobile link tap
+    navMobile.querySelectorAll('a').forEach(a => {
+        a.addEventListener('click', () => {
+            hamburger.classList.remove('open');
+            navMobile.classList.remove('open');
+        });
+    });
+
+    // ---- Smooth scroll with navbar offset ----
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            const id = this.getAttribute('href');
+            if (id === '#') return;
+            const target = document.querySelector(id);
+            if (!target) return;
+            e.preventDefault();
+            const offset = 80;
+            const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+            window.scrollTo({ top, behavior: 'smooth' });
+        });
+    });
+
+    // ---- Fade-in on scroll ----
+    const fadeEls = document.querySelectorAll('.fade-in');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.1, rootMargin: '0px 0px -48px 0px' });
+
+    fadeEls.forEach(el => observer.observe(el));
+</script>
+
 </body>
 </html>
